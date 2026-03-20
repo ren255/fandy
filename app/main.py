@@ -7,6 +7,8 @@ from app.pages.event_form import render_event_form
 from app.pages.invite_form import render_invite_form
 from app.pages.event_page import render_event_page
 from app.pages.photo_upload import render_photo_upload
+from app.pages.camera import render_camera_capture
+
 
 from app.pages.invite_redirect import handle_invite_redirect, handle_pending_invite
 from app.services.auth import is_logged_in
@@ -43,6 +45,8 @@ def main() -> None:
             render_event_page(event_id)
     elif page == "写真アップロード":
         render_photo_upload()
+    elif page == "カメラ撮影":
+        render_camera_capture()
 
 
 if __name__ == "__main__":

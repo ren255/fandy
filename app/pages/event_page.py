@@ -68,10 +68,10 @@ def render_event_page(event_id: int) -> None:
                 except Exception:
                     st.warning(f"読み込み失敗: {uf.original_name}")
 
-    # ── 右下: 写真アップロードボタン ──────────
+    # ── 右下: 写真追加ボタン群 ──────────────────
     st.markdown("---")
-    _, col_btn = st.columns([8, 2])
-    with col_btn:
+    _, col_upload, col_camera = st.columns([6, 2, 2])
+    with col_upload:
         if st.button(
             "📷 写真を追加",
             key="go_photo_upload",
@@ -80,4 +80,14 @@ def render_event_page(event_id: int) -> None:
         ):
             st.session_state["upload_target_event_id"] = event_id
             st.session_state["current_page"] = "写真アップロード"
+            st.rerun()
+    with col_camera:
+        if st.button(
+            "📸 カメラで撮影",
+            key="go_camera_capture",
+            use_container_width=True,
+            type="primary",
+        ):
+            st.session_state["upload_target_event_id"] = event_id
+            st.session_state["current_page"] = "カメラ撮影"
             st.rerun()
