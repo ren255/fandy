@@ -2,6 +2,7 @@ import streamlit as st
 from app.pages.header import render_header
 from app.pages.collection import render_collection
 from app.pages.event import render_event
+from app.pages.login import render_login
 
 
 def main() -> None:
@@ -17,6 +18,8 @@ def main() -> None:
         render_collection()
     elif current_page == "イベント":
         render_event()
+    elif current_page == "ログイン":
+        render_login()
 
 
 if __name__ == "__main__":
