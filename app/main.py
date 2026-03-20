@@ -5,6 +5,8 @@ from app.pages.event import render_event
 from app.pages.login import render_login
 from app.pages.event_form import render_event_form
 from app.pages.invite_form import render_invite_form
+from app.pages.event_page import render_event_page
+from app.pages.photo_upload import render_photo_upload
 
 
 def main() -> None:
@@ -26,6 +28,12 @@ def main() -> None:
         render_event_form()
     elif current_page == "招待コード参加":
         render_invite_form()
+    elif current_page == "イベント詳細":
+        event_id = st.session_state.get("viewing_event_id")
+        if event_id:
+            render_event_page(event_id)
+    elif current_page == "写真アップロード":
+        render_photo_upload()
 
 
 if __name__ == "__main__":

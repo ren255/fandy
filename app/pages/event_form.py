@@ -1,54 +1,71 @@
-import time
 import streamlit as st
+from sqlmodel import select
 from app.database import get_session
-from app.models import Event
+from app.models import Event, JoinedEvent
 from app.services.auth import require_login
 
 
-def render_event_form() -> None:
-    st.markdown("## 新規イベント作成")
-
+def render_invite_form() -> None:
     user = require_login()
 
-    description = st.text_area(
-        "イベント説明", placeholder="イベントの内容を入力してください", height=120
-    )
-    public = st.checkbox(
-        "公開イベント（招待コードなしで参加可能）",
-        value=True,
-        help="オフにすると招待コードを持つ人だけが参加できます",
+    event_id = st.session_state.get("upload_target_event_id")
+
+    st.markdown("## 招待コードで参加")
+
+    code = (
+        st.text_input(
+            "招待コード（4文字）",
+            max_chars=4,
+            placeholder="ABCD",
+        )
+        .strip()
+        .upper()
     )
 
     col_submit, col_cancel = st.columns([2, 1])
 
     with col_submit:
         if st.button(
-            "作成する",
-            key="event_form_submit",
+            "参加する",
+            key="invite_form_submit",
             use_container_width=True,
             type="primary",
         ):
-            if not description.strip():
-                st.error("イベント説明を入力してください")
+            if len(code) != 4:
+                st.error("4文字の招待コードを入力してください")
                 return
-            now = int(time.time())
-            with get_session() as session:
-                event = Event(
-                    created_by=user.id,
-                    created_timestamp=now,
-                    description=description.strip(),
-                    public=public,
-                )
-                session.add(event)
-                session.commit()
-                session.refresh(event)
-                invite_code = event.invite_code
 
-            st.success(f"イベントを作成しました！　招待コード: **{invite_code}**")
-            st.session_state["current_page"] = "イベント"
+            with get_session() as session:
+                event = session.exec(
+                    select(Event).where(Event.invite_code == code)
+                ).first()
+
+                if event is None:
+                    st.error("招待コードが見つかりません")
+                    return
+
+                already = session.exec(
+                    select(JoinedEvent).where(
+                        JoinedEvent.user_id == user.id,
+                        JoinedEvent.event_id == event.id,
+                    )
+                ).first()
+                if already:
+                    st.warning("すでに参加しています")
+                    return
+
+                session.add(JoinedEvent(user_id=user.id, event_id=event.id))
+                session.commit()
+
+                # セッションが閉じる前に必要な値を取り出す
+                description = event.description
+                joined_event_id = event.id
+
+            st.success(f"「{description}」に参加しました！")
+            st.session_state["current_page"] = "コレクション"
             st.rerun()
 
     with col_cancel:
-        if st.button("キャンセル", key="event_form_cancel", use_container_width=True):
+        if st.button("キャンセル", key="invite_form_cancel", use_container_width=True):
             st.session_state["current_page"] = "イベント"
             st.rerun()

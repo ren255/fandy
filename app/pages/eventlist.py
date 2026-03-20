@@ -10,7 +10,7 @@ def render_event_list(event_ids: list[int], joinable: bool = False) -> None:
     """
     event_ids: 表示するEventのIDリスト
     joinable:  Trueなら「参加する」ボタンを表示（イベントページ用）
-               Falseなら表示しない（コレクションページ用）
+               Falseならコンテナクリックで詳細へ（コレクションページ用）
     """
     if not event_ids:
         st.info("表示するイベントがありません。")
@@ -26,7 +26,10 @@ def render_event_list(event_ids: list[int], joinable: bool = False) -> None:
             with col_info:
                 st.markdown(f"**{event.description}**")
                 dt = datetime.datetime.fromtimestamp(event.created_timestamp)
-                st.caption(f"作成日時: {dt.strftime('%Y-%m-%d %H:%M')}")
+                st.caption(
+                    f"{dt.strftime('%Y-%m-%d %H:%M')}　"
+                    f"{'公開' if event.public else '🔒 招待のみ'}"
+                )
 
             with col_action:
                 if joinable:
@@ -34,6 +37,13 @@ def render_event_list(event_ids: list[int], joinable: bool = False) -> None:
                         "参加する", key=f"join_{event.id}", use_container_width=True
                     ):
                         _join_event(event.id)
+                else:
+                    if st.button(
+                        "開く", key=f"open_{event.id}", use_container_width=True
+                    ):
+                        st.session_state["viewing_event_id"] = event.id
+                        st.session_state["current_page"] = "イベント詳細"
+                        st.rerun()
 
 
 def _join_event(event_id: int) -> None:
