@@ -10,13 +10,21 @@ class User(SQLModel, table=True):
     password: str
 
 
-class Event(SQLModel, table=True):
-    """イベント"""
+import random
+import string
 
+
+def _gen_invite_code() -> str:
+    return "".join(random.choices(string.ascii_uppercase, k=4))
+
+
+class Event(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     created_by: int = Field(foreign_key="user.id")
     created_timestamp: int
     description: str
+    invite_code: str = Field(default_factory=_gen_invite_code, max_length=4)
+    public: bool = Field(default=True)
 
 
 class UploadedFile(SQLModel, table=True):
