@@ -3,7 +3,7 @@ from app.pages.header import render_header
 from app.pages.collection import render_collection
 from app.pages.event import render_event
 from app.pages.login import render_login
-from app.pages.event_form import render_invite_form
+from app.pages.event_form import render_event_form
 from app.pages.invite_form import render_invite_form
 from app.pages.event_page import render_event_page
 from app.pages.photo_upload import render_photo_upload
@@ -34,7 +34,7 @@ def main() -> None:
     elif page == "ログイン":
         render_login()
     elif page == "イベント作成":
-        render_invite_form()
+        render_event_form()
     elif page == "招待コード参加":
         render_invite_form()
     elif page == "イベント詳細":

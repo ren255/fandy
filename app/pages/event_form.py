@@ -5,7 +5,7 @@ from app.models import Event, JoinedEvent
 from app.services.auth import require_login
 
 
-def render_invite_form() -> None:
+def render_event_form() -> None:
     user = require_login()
 
     event_id = st.session_state.get("upload_target_event_id")
