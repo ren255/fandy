@@ -1,0 +1,25 @@
+# web / ui
+streamlit
+streamlit-aggrid
+streamlit-extras
+streamlit-option-menu
+
+# db
+sqlmodel
+
+# data
+pandas # table
+numpy # numbers 
+pydantic # stractured data
+Pillow # file
+
+# http / api
+httpx
+requests
+
+# graph
+matplotlib
+tqdm
+
+# utill
+python-dotenv
